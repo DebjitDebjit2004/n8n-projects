@@ -1,0 +1,954 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Hire Hunt",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "resume",
+              "fieldType": "file"
+            },
+            {
+              "fieldLabel": "location",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "India"
+                  },
+                  {
+                    "option": "United States"
+                  },
+                  {
+                    "option": "United Kingdom"
+                  },
+                  {
+                    "option": "Canada"
+                  },
+                  {
+                    "option": "Australia"
+                  },
+                  {
+                    "option": "Germany"
+                  },
+                  {
+                    "option": "Singapore"
+                  },
+                  {
+                    "option": "Netherlands"
+                  },
+                  {
+                    "option": " Ireland"
+                  },
+                  {
+                    "option": "United Arab Emirates"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "Experience Level",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Internship"
+                  },
+                  {
+                    "option": "Entry level"
+                  },
+                  {
+                    "option": "Associate"
+                  },
+                  {
+                    "option": "Mid-Senior level"
+                  },
+                  {
+                    "option": "Director"
+                  },
+                  {
+                    "option": "Executive"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "Work Mode",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "On-Site"
+                  },
+                  {
+                    "option": "Remote"
+                  },
+                  {
+                    "option": "Hybrid"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "Job Type",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Full Time"
+                  },
+                  {
+                    "option": "Part Time"
+                  },
+                  {
+                    "option": "Contract"
+                  },
+                  {
+                    "option": "Temporary"
+                  },
+                  {
+                    "option": "Other"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        -2400,
+        -416
+      ],
+      "id": "9e68c992-5497-40d4-b392-1e00348e5c25",
+      "name": "On form submission",
+      "webhookId": "96f40021-8132-4b17-9594-01b0aa19ce37"
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "links",
+              "cssSelector": "a.base-card__full-link",
+              "returnValue": "attribute",
+              "attribute": "=href",
+              "returnArray": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        -2048,
+        -224
+      ],
+      "id": "18253c99-7a2c-4941-b7f1-1d636677613f",
+      "name": "Web Scrap Linkdin Page Content For Job Links"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={{ $json.output.replaceAll(/```(?:json)?/g, \"\") }}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1936,
+        272
+      ],
+      "id": "845595ed-7399-4a53-bf2e-fbe83a029faa",
+      "name": "Score and Cover letter Field Data Set"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d81d57cd-61da-4bc9-96bd-93e804e50827",
+              "name": "title",
+              "value": "={{ $json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "ee286d80-2d11-4cdc-91fc-c191e3a760e3",
+              "name": "company",
+              "value": "={{ $json.company }}",
+              "type": "string"
+            },
+            {
+              "id": "074f459c-da1d-4e02-96df-e9d784cca2e4",
+              "name": "location",
+              "value": "={{ $json.location }}",
+              "type": "string"
+            },
+            {
+              "id": "5fe49209-a03f-4957-ba8d-fb73941dbb32",
+              "name": "description",
+              "value": "={{ $json.description.replaceAll(/\\s+/g, \" \") }}",
+              "type": "string"
+            },
+            {
+              "id": "defa1948-8073-4f41-a24d-70a0f2a1676d",
+              "name": "jobid",
+              "value": "={{ $json.jobid.split(\":\").last() }}",
+              "type": "string"
+            },
+            {
+              "id": "3da98bb7-f86e-41ff-a82e-5a5c0acd4396",
+              "name": "applyLink",
+              "value": "={{ \"https://www.linkedin.com/jobs/view/\"+ $json.jobid.split(\":\").last() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1792,
+        16
+      ],
+      "id": "5fec0c8f-a19c-4721-b436-321b6266ee55",
+      "name": "Job Data Fields Set"
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "title",
+              "cssSelector": "div h1"
+            },
+            {
+              "key": "company",
+              "cssSelector": "div span a"
+            },
+            {
+              "key": "location",
+              "cssSelector": "div span[class*='topcard__flavor topcard__flavor--bullet']"
+            },
+            {
+              "key": "description",
+              "cssSelector": "div.description__text.description__text--rich"
+            },
+            {
+              "key": "jobid",
+              "cssSelector": "a[data-item-type='semaphore']",
+              "returnValue": "attribute",
+              "attribute": "data-semaphore-content-urn"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        -2048,
+        16
+      ],
+      "id": "4f96bb3c-e1be-4b55-a235-04deee7f2ebe",
+      "name": "Web Scrap Job Content"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.links }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -2272,
+        16
+      ],
+      "id": "807a5fc3-045d-40a3-b395-eb04d9de3a16",
+      "name": "Fetch Job Contents"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "url",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -1200,
+        -416
+      ],
+      "id": "07db1710-c513-4a24-971d-a189acb5b438",
+      "name": "Split Out Filtered LinkdIn URLs"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-120b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -2272,
+        544
+      ],
+      "id": "acf72b75-2420-473c-8940-4c0abfe711ee",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "RobdEoqD5o707r0m",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.score }}",
+                    "rightValue": 51,
+                    "operator": {
+                      "type": "number",
+                      "operation": "gt"
+                    },
+                    "id": "61aeef8d-8c54-40f4-a476-9171e8a7b9cd"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "3d29093c-5a5b-4966-b534-a222d156096c",
+                    "leftValue": "={{ $json.score }}",
+                    "rightValue": 52,
+                    "operator": {
+                      "type": "number",
+                      "operation": "lt"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -1696,
+        272
+      ],
+      "id": "5527c931-5785-4e93-8e8d-ffcef97bd45f",
+      "name": "Score Based Routing"
+    },
+    {
+      "parameters": {
+        "amount": 2
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -1200,
+        -208
+      ],
+      "id": "613b11a2-3ecd-4fa4-a7ef-b090e7cbd689",
+      "name": "Wait1",
+      "webhookId": "f263a60f-a335-4915-a2ab-be8302b894dd"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -1456,
+        -224
+      ],
+      "id": "5ddbb535-8e0e-478a-9d4c-3e468ce0b24b",
+      "name": "Loop Over Items1"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -2272,
+        -224
+      ],
+      "id": "4c85cd53-1ba1-4429-af28-51781569e5fe",
+      "name": "Fetch Linkdin Page Content"
+    },
+    {
+      "parameters": {
+        "jsCode": "const baseUrl = \"https://www.linkedin.com/jobs/search/?\";\n\nconst keyword = ($input.first().json.output || \"\").trim();\n\nconst location = $('On form submission').first().json['location'] || \"\";\nconst experienceLevel = $('On form submission').first().json['Experience Level'] || \"\";\nconst remote = $('On form submission').first().json['Work Mode'] || \"\";\nconst jobType = $('On form submission').first().json['Job Type'] || \"\";\n\nconst MIN_FILTERS = 2;\nconst MAX_FILTERS = 4;\n\n\n// -------- helpers --------\n\nfunction mapExperience(exp) {\n\tswitch (exp) {\n\t\tcase \"Internship\": return \"1\";\n\t\tcase \"Entry level\": return \"2\";\n\t\tcase \"Associate\": return \"3\";\n\t\tcase \"Mid-Senior level\": return \"4\";\n\t\tcase \"Director\": return \"5\";\n\t\tcase \"Executive\": return \"6\";\n\t\tdefault: return \"\";\n\t}\n}\n\nfunction mapRemote(r) {\n\tswitch (r) {\n\t\tcase \"On-Site\": return \"1\";\n\t\tcase \"Remote\": return \"2\";\n\t\tcase \"Hybrid\": return \"3\";\n\t\tdefault: return \"\";\n\t}\n}\n\nfunction mapJobType(t) {\n\tswitch (t) {\n\t\tcase \"Full-time\": return \"F\";\n\t\tcase \"Part-time\": return \"P\";\n\t\tcase \"Contract\": return \"C\";\n\t\tcase \"Temporary\": return \"T\";\n\t\tcase \"Internship\": return \"I\";\n\t\tdefault: return \"\";\n\t}\n}\n\n\n// -------- filter objects --------\n\nconst filters = [\n\t{\n\t\tkey: \"location\",\n\t\tvalue: location ? `location=${encodeURIComponent(location)}` : null\n\t},\n\t{\n\t\tkey: \"experience\",\n\t\tvalue: experienceLevel ? `f_E=${mapExperience(experienceLevel)}` : null\n\t},\n\t{\n\t\tkey: \"remote\",\n\t\tvalue: remote ? `f_WT=${mapRemote(remote)}` : null\n\t},\n\t{\n\t\tkey: \"jobType\",\n\t\tvalue: jobType ? `f_JT=${mapJobType(jobType)}` : null\n\t}\n];\n\n\n// -------- generate combinations --------\n\nconst results = [];\nconst unique = new Set();\nconst n = filters.length;\n\nfor (let mask = 1; mask < (1 << n); mask++) {\n\n\tconst usedFilters = [];\n\n\tfor (let i = 0; i < n; i++) {\n\t\tif (mask & (1 << i)) {\n\t\t\tif (filters[i].value) {\n\t\t\t\tusedFilters.push(filters[i]);\n\t\t\t}\n\t\t}\n\t}\n\n\tif (usedFilters.length < MIN_FILTERS || usedFilters.length > MAX_FILTERS) continue;\n\n\tlet url = baseUrl;\n\n\tif (keyword) {\n\t\turl += `&keywords=${encodeURIComponent(keyword)}`;\n\t}\n\n\tfor (const f of usedFilters) {\n\t\turl += `&${f.value}`;\n\t}\n\n\tif (!unique.has(url)) {\n\n\t\tunique.add(url);\n\n\t\tresults.push({\n\t\t\tjson: {\n\t\t\t\turl,\n\t\t\t\tappliedFilters: usedFilters.map(f => f.key)\n\t\t\t}\n\t\t});\n\t}\n}\n\nreturn results;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1472,
+        -416
+      ],
+      "id": "a918d8a6-d7ec-4e96-b4ca-c06978a4b3a0",
+      "name": "Linkdin URL Generate Node"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an intelligent hiring assistant that evaluates how well a candidate's resume matches a job description.\n\nYour task is to analyze the candidate's resume and the job description, calculate a job matching score, and generate a professional cover letter.\n\n------------------------\nSCORING CRITERIA\n------------------------\n\nCalculate a matching score between 0 and 100 based on the following factors:\n\n1. Tech Stack Match (Highest Priority)\n\n- Strong overlap → high score\n- Partial overlap → medium score\n- Very little overlap → low score\n\n2. Experience Match (High Priority)\nAnalyze the candidate's professional experience and compare it with the experience required in the job description.\n\nConsider:\n- Years of experience\n- Responsibilities\n\n3. Project Relevance (Medium Priority)\nCheck if the resume includes projects related to the job.\n\nRelevant real-world projects increase the score.\n\nMatching tools increase the score slightly.\n\n------------------------\nSCORING GUIDELINES\n------------------------\n\nUse the following ranges:\n\nStrong match → 70 to 100  \nModerate match → 40 to 70  \nWeak match → 0 to 40  \n\nImportant rules:\n- Do NOT inflate scores.\n- Only give scores above 80 if the candidate strongly matches the job requirements.\n- If there is very little skill overlap, keep the score below 40.\n\n------------------------\nCOVER LETTER REQUIREMENTS\n------------------------\n\nGenerate a professional cover letter based on the resume and job description.\n\nRules:\n- Minimum 2 paragraphs\n- Do NOT include:\n  - Candidate name\n  - Address\n  - Greeting lines (like \"Dear Hiring Manager\")\n  - Signature\n- Focus on:\n  - Relevant experience\n  - Matching technologies\n  - Why the candidate fits the role\n\n------------------------\nOUTPUT FORMAT RULES\n------------------------\n\nReturn ONLY valid JSON.\n\nDo NOT include:\n- Markdown\n- Code blocks\n- Explanations\n- Extra text\n\nEscape special characters such as quotation marks using a backslash (\\\")\n\nExample output format:\n\n{\"score\": 80, \"coverLetter\": \"Generated cover letter text\"}\n\n------------------------\nINPUT DATA\n------------------------\n\njob_description:\n{{ $json.description }}\n\ncandidate_resume:\n{{ $('Extract Text From Resume').item.json.text }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -2272,
+        272
+      ],
+      "id": "6eca4b4e-6f2b-438b-8aad-0da840c910c5",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -1856,
+        -160
+      ],
+      "id": "8e3be51b-a626-4816-82e6-8dd1f056a442",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "oArruayj8mcMv7CD",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 20
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -1200,
+        304
+      ],
+      "id": "e4f4d5e4-2b5c-451b-acc8-1d1ea974c5be",
+      "name": "Wait",
+      "webhookId": "e2a41cee-5fd5-4c13-8e8c-9290d945044a"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -1456,
+        288
+      ],
+      "id": "2319de67-5574-4cc1-98e9-e28b74ec5003",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a keyword generation agent.\n\nYour task is to do Best Analysis from the given resume text and Give Best Only Two Domain\n\nRules:\n- Extract only:\n  Only Two Domain\n- Do NOT include:\n  names, company names, locations, soft skill, hard Skills or generic words\n- Remove duplicates\n\nOutput rule:\n- Return ONLY ONE single line string\n- Keywords must be separated by comma and space\n- No explanation\n- No extra text\n\nInput:\n{{ $json.text }}\n\nOutput:\nDomain 1 Domain 2 ",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -1856,
+        -416
+      ],
+      "id": "3fffb833-437f-430f-ba8a-6ef176630740",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "=resume",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -2048,
+        -416
+      ],
+      "id": "b72c0062-81c9-47cc-bb21-c4165f65c220",
+      "name": "Extract Text From Resume"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "links",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -1456,
+        16
+      ],
+      "id": "11a1e33f-1ab4-45b5-a2ec-4cdb8ac2efdd",
+      "name": "Split Out Job Links"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1ccN9zzTBrQjEhZop8nSgSL6hoooJXYctsPE-HUnAZ9w",
+          "mode": "list",
+          "cachedResultName": "Job Records",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ccN9zzTBrQjEhZop8nSgSL6hoooJXYctsPE-HUnAZ9w/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ccN9zzTBrQjEhZop8nSgSL6hoooJXYctsPE-HUnAZ9w/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Job Title": "={{ $('Job Data Fields Set').item.json.title }}",
+            "Comapany Name ": "={{ $('Job Data Fields Set').item.json.company }}",
+            "Company Location": "={{ $('Job Data Fields Set').item.json.location }}",
+            "Job Description": "={{ $('Job Data Fields Set').item.json.description }}",
+            "Apply Link": "={{ $('Job Data Fields Set').item.json.applyLink }}",
+            "Cover Letter ": "={{ $('Score and Cover letter Field Data Set').item.json.coverLetter }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Job Title",
+              "displayName": "Job Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Comapany Name ",
+              "displayName": "Comapany Name ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Company Location",
+              "displayName": "Company Location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Job Description",
+              "displayName": "Job Description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Apply Link",
+              "displayName": "Apply Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Cover Letter ",
+              "displayName": "Cover Letter ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1696,
+        528
+      ],
+      "id": "a37049ad-0f20-427c-a8cb-1e7389278460",
+      "name": "Record All Data in Sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "zkgX2YoI7p15ficM",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "1425023760",
+        "text": "=Title: {{ $('Job Data Fields Set').item.json.title }}\nCompany: {{ $('Job Data Fields Set').item.json.company }}\nLocation: {{ $('Job Data Fields Set').item.json.location }}\nApply Link: {{ $('Job Data Fields Set').item.json.applyLink }}\nJob Match Score: {{ $json.score }}\nCover Letter: {{ $json.coverLetter }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -1936,
+        528
+      ],
+      "id": "10a7317e-46b2-4559-98a5-79d20b279944",
+      "name": "Details Send With Cover Letter",
+      "webhookId": "e942b087-6bb5-4049-aea7-20be5e00cfe9",
+      "credentials": {
+        "telegramApi": {
+          "id": "UxGLsfYWxc795K0v",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "1425023760",
+        "text": "👋 Welcome to Hire Hunt AI! \n\n🚀  Before we begin your job search, here’s a quick overview of how everything works so you know exactly what to expect.  \n\n🔍 Step 1: Resume Analysis  Once you upload your resume, our AI will carefully analyze it to identify your core domains and expertise areas.  \n\n🎯 Step 2: Smart Filter Application  Based on the details you provide (Location, Experience Level, Work Mode, Job Type), the system will generate multiple optimized search combinations such as:  Location + Experience  Location + Remote  Experience + Job Type  And other advanced filter combinations  This ensures you don’t miss relevant opportunities while keeping results highly targeted.  \n\n🌐 Step 3: Job Search & Extraction  The bot will search for the latest job listings posted within the last 24 hours and fetch detailed job information.  \n\n🤖 Step 4: AI Matching & Scoring  Each job will be compared with your resume. You will receive:  ✅ A job matching score  📝 A personalized cover letter  🔗 Direct application link  \n\n📩 Step 5: Smart Delivery  Only relevant and high-scoring jobs will be sent to you to save your time and maximize your chances.  \n\n⏳ Your personalized job search results will be ready within 5 to 10 minutes.  \n- - Sit back and relax while Hire Hunt AI finds the best opportunities for you. 💼✨",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -2704,
+        -416
+      ],
+      "id": "1483e6ad-1a3f-4126-b725-829d7b6dfd79",
+      "name": "Welcome Message1",
+      "webhookId": "6bb0be61-102f-45a0-b35d-58cbb468fe72",
+      "credentials": {
+        "telegramApi": {
+          "id": "UxGLsfYWxc795K0v",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Extract Text From Resume",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Welcome Message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Web Scrap Linkdin Page Content For Job Links": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Score and Cover letter Field Data Set": {
+      "main": [
+        [
+          {
+            "node": "Score Based Routing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Job Data Fields Set": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Web Scrap Job Content": {
+      "main": [
+        [
+          {
+            "node": "Job Data Fields Set",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Job Contents": {
+      "main": [
+        [
+          {
+            "node": "Web Scrap Job Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out Filtered LinkdIn URLs": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Score Based Routing": {
+      "main": [
+        [
+          {
+            "node": "Details Send With Cover Letter",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "Fetch Linkdin Page Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items1": {
+      "main": [
+        [
+          {
+            "node": "Split Out Job Links",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Linkdin Page Content": {
+      "main": [
+        [
+          {
+            "node": "Web Scrap Linkdin Page Content For Job Links",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Linkdin URL Generate Node": {
+      "main": [
+        [
+          {
+            "node": "Split Out Filtered LinkdIn URLs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Score and Cover letter Field Data Set",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Fetch Job Contents",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Linkdin URL Generate Node",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Text From Resume": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out Job Links": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Record All Data in Sheet": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Details Send With Cover Letter": {
+      "main": [
+        [
+          {
+            "node": "Record All Data in Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a95fbdfc87bf93dc16f376f6af762d2ec93806cad7dd1a8fcd314f1f3e9418e5"
+  }
+}
